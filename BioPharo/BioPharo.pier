@@ -216,6 +216,49 @@ search outputToFile: 'blast-' , BioObject currentSeconds , '.xml'.
 !!Swiss-Prot and ExPASy
 !!PDB
 !!Population Genetics
+
+!!!EigenStrat
+
+EigenStrat (from EigenSoft package) is a principal component analysis (Price et al., Nature Genetics, 2006) software implementing a population-based method used in Population Structure and Association Analysis. It is used for detecting genetic population structure and its advantage is a low computational cost compared to the method implemented in Structure. EigenSoft can be run with SNP and Microsatellite data. EigenSoft can be found in ""*http://www.hsph.harvard.edu/alkes-price/software/*"" and accepts the following file formats used in combination:
+
+|!Combination|!Format|
+|geno, snp, ind|EigenStrat|
+|ped, pedsnp, pedind|PED|
+|ancestrymapgeno, snp, ind|AncestryMap|
+|bed, pedsnp, pedind|PackedPED, PLINK|
+|packedancestrymapgeno, snp, ind|PackedAncestryMap|
+
+!!! Using Microsatellite data
+
+Please make sure you understand the layout of your input file formats, because for Microsatellite data the SNP loci written could be bogus. The writer produces output files ready to be used in smartpca program, included in EigenSoft. The following script reads two files:
+
+- An input.ped file
+- An input_Alleles_Fqs.csv file (produced from MSTools Microsoft Excel plugin)
+
+[[[
+| snpWriter pedFile alleleFqs fsRoot wrkFolder |
+fsRoot := FileSystem disk root children at: 2.
+wrkFolder := fsRoot resolve: 'MyWorkingFolder'.
+
+pedFile := wrkFolder / 'input.ped'.
+" allele frequencies from MSTools plugin "
+alleleFqs := wrkFolder / 'input_Alleles_Fqs.csv'.
+
+snpWriter := BioEigenStratWriter new
+				alleleFqs: alleleFqs;
+				outputFilename: 'eig_output.snp';
+				pedFile: alleleFqs;
+				yourself.
+snpWriter writeAsEigenStrat.
+]]]
+
+And produces two files:
+
+;geno file
+:Contains in every row, the alleles of every microsatellite. The columns corresponds to the individuals. Values 0, 1 or 2 are the copies of such allele. If no data, value 9 is written.
+;snp file
+:Contains every allele of every microsatellite. For example in Column 1, M2883:230 is microsatellite M2883 allele 230. In Column 3, 0.150193 matches with microsatellite 15 and 193 is the count from the sorted list of alleles. Column 4 is the same as column 3 without 0.0.
+
 !!Phylogenetics
 !!Clustering
 !!Graphics
@@ -261,4 +304,4 @@ Packages are organized in the following way:
 ;BioProject
 :A basic application framework for organizing work in projects.
 ;BioWrappers
-:Core for wrapping desktop and web programs + specific wrappers for common bioinformatics software.
+:Core for wrapping desktop and web programs plus specific wrappers for common bioinformatics software.
